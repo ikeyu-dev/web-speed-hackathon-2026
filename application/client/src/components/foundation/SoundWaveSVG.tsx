@@ -1,4 +1,3 @@
-import { AudioContext } from "standardized-audio-context";
 import { useEffect, useRef, useState } from "react";
 
 interface ParsedData {
