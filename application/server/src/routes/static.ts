@@ -31,6 +31,7 @@ staticRouter.use(
     maxAge: "1y",
     etag: true,
     lastModified: true,
+    index: false,
     setHeaders: (res, filePath) => {
       if (filePath.endsWith(".html")) {
         res.setHeader("Cache-Control", "no-cache");
