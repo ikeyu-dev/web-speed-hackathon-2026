@@ -21,8 +21,6 @@ searchRouter.get("/search", async (req, res) => {
   }
 
   const searchTerm = keywords ? `%${keywords}%` : null;
-  const limit = req.query["limit"] != null ? Number(req.query["limit"]) : undefined;
-  const offset = req.query["offset"] != null ? Number(req.query["offset"]) : undefined;
 
   // 日付条件を構築
   const dateConditions: Record<symbol, Date>[] = [];
@@ -39,8 +37,6 @@ searchRouter.get("/search", async (req, res) => {
   const textWhere = searchTerm ? { text: { [Op.like]: searchTerm } } : {};
 
   const postsByText = await Post.findAll({
-    limit,
-    offset,
     where: {
       ...textWhere,
       ...dateWhere,
@@ -68,8 +64,6 @@ searchRouter.get("/search", async (req, res) => {
         { association: "movie" },
         { association: "sound" },
       ],
-      limit,
-      offset,
       where: dateWhere,
     });
   }
