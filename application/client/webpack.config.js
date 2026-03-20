@@ -64,7 +64,7 @@ const config = {
     chunkFormat: "array-push",
     filename: "scripts/[name].js",
     path: DIST_PATH,
-    publicPath: "/",
+    publicPath: "auto",
     clean: true,
   },
   plugins: [
