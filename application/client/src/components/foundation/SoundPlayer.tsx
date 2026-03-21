@@ -1,9 +1,8 @@
-import { ReactEventHandler, useCallback, useRef, useState } from "react";
+import { ReactEventHandler, useCallback, useEffect, useRef, useState } from "react";
 
 import { AspectRatioBox } from "@web-speed-hackathon-2026/client/src/components/foundation/AspectRatioBox";
 import { FontAwesomeIcon } from "@web-speed-hackathon-2026/client/src/components/foundation/FontAwesomeIcon";
 import { SoundWaveSVG } from "@web-speed-hackathon-2026/client/src/components/foundation/SoundWaveSVG";
-import { useFetch } from "@web-speed-hackathon-2026/client/src/hooks/use_fetch";
 import { fetchBinary } from "@web-speed-hackathon-2026/client/src/utils/fetchers";
 import { getSoundPath } from "@web-speed-hackathon-2026/client/src/utils/get_path";
 
@@ -13,7 +12,30 @@ interface Props {
 
 export const SoundPlayer = ({ sound }: Props) => {
   const soundUrl = getSoundPath(sound.id);
-  const { data } = useFetch(soundUrl, fetchBinary);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [data, setData] = useState<ArrayBuffer | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    fetchBinary(soundUrl).then(setData).catch(() => {});
+  }, [visible, soundUrl]);
 
   const [currentTimeRatio, setCurrentTimeRatio] = useState(0);
   const handleTimeUpdate = useCallback<ReactEventHandler<HTMLAudioElement>>((ev) => {
@@ -35,7 +57,7 @@ export const SoundPlayer = ({ sound }: Props) => {
   }, []);
 
   return (
-    <div className="bg-cax-surface-subtle flex h-full w-full items-center justify-center">
+    <div ref={containerRef} className="bg-cax-surface-subtle flex h-full w-full items-center justify-center">
       <audio ref={audioRef} loop={true} onTimeUpdate={handleTimeUpdate} src={soundUrl} preload="none" />
       <div className="p-2">
         <button
