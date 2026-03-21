@@ -71,10 +71,10 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
-    new webpack.EnvironmentPlugin({
-      BUILD_DATE: new Date().toISOString(),
-      COMMIT_HASH: process.env.SOURCE_VERSION || "",
-      NODE_ENV: "production",
+    new webpack.DefinePlugin({
+      "process.env.BUILD_DATE": JSON.stringify(new Date().toISOString()),
+      "process.env.COMMIT_HASH": JSON.stringify(process.env.SOURCE_VERSION || ""),
+      "process.env.NODE_ENV": JSON.stringify("production"),
     }),
     new MiniCssExtractPlugin({
       filename: "styles/[name].css",
