@@ -53,6 +53,22 @@ function buildTimelineHtml(posts: any[]): string {
 </div>`;
 }
 
+function buildTermsHtml(): string {
+  return `<div style="display:flex;justify-content:center;font-family:sans-serif">
+<div style="display:flex;min-height:100vh;max-width:100%">
+<nav style="width:72px;min-height:100vh;border-right:1px solid #d6d3d1;padding:16px 8px"></nav>
+<main style="width:100%;max-width:640px">
+<article style="padding:8px 16px;line-height:1.6;font-size:14px;color:#042f2e">
+<h1 style="font-size:1.875rem;font-weight:bold;margin:16px 0 8px;font-family:Rei no Are Mincho,serif">利用規約</h1>
+<p>この利用規約（以下、「本規約」といいます。）は、株式会社&nbsp;架空の会社（以下、「当社」といいます。）がこのウェブサイト上で提供するサービス（以下、「本サービス」といいます。）の利用条件を定めるものです。登録ユーザーの皆さま（以下、「ユーザー」といいます。）には、本規約に従って、本サービスをご利用いただきます。</p>
+<h2 style="font-size:1.5rem;font-weight:bold;margin:16px 0 8px;font-family:Rei no Are Mincho,serif">第1条（適用）</h2>
+<p>本規約は、ユーザーと当社との間の本サービスの利用に関わる一切の関係に適用されるものとします。</p>
+</article>
+</main>
+</div>
+</div>`;
+}
+
 export const ssrRouter = Router();
 
 ssrRouter.use("{*path}", async (req: Request, res: Response) => {
@@ -66,6 +82,11 @@ ssrRouter.use("{*path}", async (req: Request, res: Response) => {
       const html = rawTemplate
         .replace('<div id="app"></div>', `<div id="app">${timelineHtml}</div>`)
         .replace('</head>', `${script}</head>`);
+      return res.status(200).type("text/html").send(html);
+    }
+    if (req.originalUrl === "/terms") {
+      const termsHtml = buildTermsHtml();
+      const html = rawTemplate.replace('<div id="app"></div>', `<div id="app">${termsHtml}</div>`);
       return res.status(200).type("text/html").send(html);
     }
   } catch {
